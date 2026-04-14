@@ -6,13 +6,17 @@ import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import logger from './config/logger';
 import { connectDatabase } from './config/database';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import authRoutes from './routes/auth';
+import campaignRoutes from './routes/campaigns';
+import analyticsRoutes from './routes/analytics';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
-const io = new SocketIOServer(httpServer, {
+export const io = new SocketIOServer(httpServer, {
   cors: {
     origin: process.env.CLIENT_URL || 'http://localhost:3000',
     methods: ['GET', 'POST']
@@ -35,29 +39,36 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
-// API Routes will be added here
-app.get('/api/campaigns', (req: Request, res: Response) => {
-  res.json({ message: 'Campaigns endpoint' });
-});
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/campaigns', campaignRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
-app.get('/api/analytics', (req: Request, res: Response) => {
-  res.json({ message: 'Analytics endpoint' });
-});
+// 404 handler
+app.use(notFoundHandler);
 
-// Error handling middleware
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  logger.error(err.message);
-  res.status(500).json({ error: 'Internal Server Error' });
-});
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 // Socket.IO real-time updates
 io.on('connection', (socket) => {
   logger.info(`User connected: ${socket.id}`);
 
-  socket.on('subscribe_campaign', (campaignId) => {
+  // Subscribe to user-specific room
+  socket.on('subscribe_user', (userId: string) => {
+    socket.join(`user_${userId}`);
+    logger.info(`User ${userId} subscribed to real-time updates`);
+  });
+
+  // Subscribe to campaign specific room
+  socket.on('subscribe_campaign', (campaignId: string) => {
     socket.join(`campaign_${campaignId}`);
   });
 
@@ -66,19 +77,17 @@ io.on('connection', (socket) => {
   });
 });
 
-// Export io for use in routes
-export { io };
-
 const PORT = process.env.PORT || 5000;
 
 // Start server
 async function start() {
   try {
     await connectDatabase();
-    logger.info('Database connected');
+    logger.info('Database connected successfully');
 
     httpServer.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
+      logger.info(`Server running on http://localhost:${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV}`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

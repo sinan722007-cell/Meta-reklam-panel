@@ -1,11 +1,24 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, User, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const { addToast } = useToast();
+
+  const handleLogout = async () => {
+    await logout();
+    addToast('Logged out successfully', 'success');
+    navigate('/login');
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 px-8 py-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">Welcome back!</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Welcome back, {user?.username}!</h2>
         <div className="flex items-center gap-6">
           <button className="relative text-gray-600 hover:text-gray-900">
             <Bell className="w-5 h-5" />
@@ -13,13 +26,16 @@ const Header: React.FC = () => {
           </button>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">User</p>
-              <p className="text-xs text-gray-500">Administrator</p>
+              <p className="text-sm font-medium text-gray-900">{user?.username}</p>
+              <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
             <button className="text-gray-600 hover:text-gray-900">
               <User className="w-5 h-5" />
             </button>
-            <button className="text-gray-600 hover:text-gray-900">
+            <button
+              onClick={handleLogout}
+              className="text-gray-600 hover:text-gray-900 transition"
+            >
               <LogOut className="w-5 h-5" />
             </button>
           </div>
