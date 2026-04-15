@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from './auth';
-import logger from './logger';
+import { verifyToken } from '../config/auth';
+import logger from '../config/logger';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
