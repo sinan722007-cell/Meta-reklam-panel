@@ -1,0 +1,55 @@
+# Railway Ignore File - Files/folders to exclude from Railway deployment
+
+# Version Control
+.git/
+.gitignore
+
+# Dependencies (will be installed)
+node_modules/
+
+# Environment files
+.env.local
+.env.development
+.env.test
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build outputs (will be rebuilt)
+dist/
+build/
+.next/
+
+# Documentation
+docs/
+README.md
+CONTRIBUTING.md
+FEATURES.md
+LICENSE
+
+# Tests
+__tests__/
+*.test.ts
+*.test.tsx
+jest.config.js
+coverage/
+
+# Development
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Node
+npm-debug.log
+yarn-error.log
+lerna-debug.log
+
+# Misc
+.env.example
+.netlify/
+.vercel/
