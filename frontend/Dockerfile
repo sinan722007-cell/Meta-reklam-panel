@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy manifests first so Docker can cache the install layer
 COPY package*.json ./
 
-# --legacy-peer-deps bypasses the react-scripts <> TypeScript 5.x conflict
-RUN npm install --legacy-peer-deps
+# --legacy-peer-deps + --force bypasses the ajv/ajv-keywords peer dep conflict
+RUN npm ci --legacy-peer-deps --force
 
 COPY . .
 
