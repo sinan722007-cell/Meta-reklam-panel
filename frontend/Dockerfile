@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # --legacy-peer-deps + --force bypasses the ajv/ajv-keywords peer dep conflict
-RUN npm ci --legacy-peer-deps --force
+RUN npm install --legacy-peer-deps --force
 
 COPY . .
 
