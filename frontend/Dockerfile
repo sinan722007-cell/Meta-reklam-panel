@@ -7,7 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # --legacy-peer-deps bypasses the react-scripts <> TypeScript 5.x conflict
-RUN npm install --legacy-peer-deps
+# --force resolves the ajv/ajv-keywords version conflict in react-scripts 5.0.1
+RUN npm ci --legacy-peer-deps --force
 
 COPY . .
 
