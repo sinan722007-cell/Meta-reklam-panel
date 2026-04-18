@@ -4,7 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-import ToastContainer from './components/ToastContainer';
+import { ToastContainer } from './components/ToastContainer';
 import Dashboard from './pages/Dashboard';
 import Campaigns from './pages/Campaigns';
 import Analytics from './pages/Analytics';
