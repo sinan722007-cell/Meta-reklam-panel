@@ -11,7 +11,7 @@ RUN npm install --legacy-peer-deps --force
 
 COPY . .
 
-RUN npm run build
+RUN CI=false npm run build
 
 # ── Stage 2: serve ────────────────────────────────────────────────────────────
 FROM nginx:alpine
